@@ -1,0 +1,21 @@
+{
+  "id": "depa-digital-startup-fund",
+  "product": "book-grant-data",
+  "domain": "grant",
+  "schema_version": "grant.v2",
+  "fetch_url": "https://www.depa.or.th/th/startup",
+  "source_url": "https://www.depa.or.th/th/startup",
+  "access": "html",
+  "content_type": "text/html",
+  "category": "innovation",
+  "record_kind": "directory",
+  "provider": "Digital Economy Promotion Agency (depa), Thailand",
+  "enabled": true,
+  "permission_status": "reviewed-public-read",
+  "reviewed_at": "2026-09-07",
+  "permission_evidence": "https://www.depa.or.th/th/startup",
+  "owner": "bookchaowalit",
+  "min_interval_seconds": 21600,
+  "retention": "private local raw archive; operational retention; no automatic deletion",
+  "use": "public program metadata for personal discovery; no source-body republication"
+}

@@ -1,0 +1,21 @@
+{
+  "id": "iuk-zevi2-alternative-fuels",
+  "product": "book-grant-data",
+  "domain": "grant",
+  "schema_version": "grant.v2",
+  "fetch_url": "https://www.ukri.org/opportunity/zero-emission-vessels-and-infrastructure-two-alternative-fuels/",
+  "source_url": "https://www.ukri.org/opportunity/zero-emission-vessels-and-infrastructure-two-alternative-fuels/",
+  "access": "html",
+  "content_type": "text/html",
+  "category": "climate",
+  "record_kind": "program",
+  "provider": "Innovate UK / UK Department for Transport",
+  "enabled": true,
+  "permission_status": "reviewed-public-read",
+  "reviewed_at": "2026-09-07",
+  "permission_evidence": "https://www.ukri.org/opportunity/zero-emission-vessels-and-infrastructure-two-alternative-fuels/",
+  "owner": "bookchaowalit",
+  "min_interval_seconds": 21600,
+  "retention": "private local raw archive; operational retention; no automatic deletion",
+  "use": "public funding competition metadata for personal discovery; no source-body republication"
+}

@@ -1,0 +1,42 @@
+{
+  "id": "creative-europe-culture-calls",
+  "product": "book-grant-data",
+  "domain": "grant",
+  "schema_version": "grant.v2",
+  "fetch_url": "https://culture.ec.europa.eu/funding/calls",
+  "source_url": "https://culture.ec.europa.eu/funding/calls",
+  "access": "html",
+  "content_type": "text/html",
+  "category": "arts-culture",
+  "provider": "European Commission / Culture and Creativity",
+  "title": "Creative Europe culture funding calls",
+  "required_markers": [
+    "funding opportunities",
+    "cultural and creative sectors"
+  ],
+  "generic_html": true,
+  "eligible_countries": [
+    "GLOBAL"
+  ],
+  "eligibility_text": "European Commission culture funding call directory; each call defines eligible countries, entities and co-financing.",
+  "value_kind": "cash",
+  "value_amount": null,
+  "value_currency": null,
+  "value_guaranteed": null,
+  "cost_notes": "The adapter records only public programme metadata. Confirm current eligibility, price, availability and terms at the official source.",
+  "normalized_terms": {
+    "funding_purpose": "Cultural and creative sector projects",
+    "applicant_type": "organization",
+    "matching_funds_required": null,
+    "reporting_obligation": null
+  },
+  "enabled": true,
+  "permission_status": "reviewed-public-read",
+  "reviewed_at": "2026-09-08",
+  "permission_evidence": "https://culture.ec.europa.eu/robots.txt",
+  "owner": "bookchaowalit",
+  "min_interval_seconds": 21600,
+  "retention": "private local raw archive; operational retention; no automatic deletion",
+  "use": "public grant metadata for personal discovery; no source-body republication",
+  "record_kind": "program"
+}

@@ -1,0 +1,25 @@
+{
+  "domain": "grant",
+  "enabled_sources": [
+    "govuk-innovation-funding",
+    "depa-digital-startup-fund",
+    "iuk-zevi2-alternative-fuels",
+    "grants-gov-research-opportunities",
+    "creative-europe-culture-calls",
+    "national-lottery-community-funding",
+    "sba-small-business-grants"
+  ],
+  "enabled_category_capabilities": ["research", "innovation", "arts-culture", "community", "small-business", "climate"],
+  "network_enabled": true,
+  "permission_status": "reviewed-public-read",
+  "policy_file": "src/book_grant_data/source.json",
+  "candidate_sources": [
+    {
+      "id": "nia-financial-support",
+      "source_url": "https://www.nia.or.th/service/financial-support",
+      "status": "blocked",
+      "reason": "The public HTML is over the 2 MB capture cap and includes a CSRF session marker; review an official API or safe text export before enabling."
+    }
+  ],
+  "notes": "Seven manually invoked official sources. Six-hour minimum interval per source. No schedule or remote writes."
+}

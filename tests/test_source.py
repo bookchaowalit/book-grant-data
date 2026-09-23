@@ -75,4 +75,18 @@ class SourceTests(unittest.TestCase):
         self.assertEqual(item['status'],'open')
         self.assertEqual(item['value'],{'kind':'cash','amount':None,'currency':'GBP','guaranteed':False})
 
+    def test_iuk_extended_closed_opportunity_uses_current_deadline(self):
+        source=source_config('iuk-zevi2-alternative-fuels')
+        raw=('Zero emission vessels and infrastructure two: alternative fuels '
+             'Opportunity status: Closed. Closing date: 17 September 2026 11:00am UK time. '
+             'The closing date has been extended to 17 September 11am UK time due to technical issues. '
+             'Funding type: Grant. UK registered organisations can apply.').encode()
+        data=normalize(raw,source,'2026-09-23T14:47:14Z')
+        for item in data['items']:
+            item['provenance'].update(raw_object_key='landing/test',bronze_manifest_key='control/manifests/test')
+        self.assertEqual(validate(data)['schema_version'],'grant.v2')
+        item=data['items'][0]
+        self.assertEqual(item['deadline'],{'kind':'fixed','at':'2026-09-17T10:00:00Z'})
+        self.assertEqual(item['status'],'closed')
+
 if __name__=='__main__': unittest.main()

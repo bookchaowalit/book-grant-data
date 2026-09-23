@@ -100,18 +100,22 @@ def normalize(raw, source, checked_at):
         parser=Text(); parser.feed(raw.decode('utf-8'))
         text=' '.join(' '.join(parser.parts).split())
         lower=text.casefold()
-        required=('zero emission vessels and infrastructure two: alternative fuels' in lower and 'closing date:' in lower and '16 september 2026' in lower and 'funding type:' in lower and 'grant' in lower and 'uk registered' in lower)
+        required=('zero emission vessels and infrastructure two: alternative fuels' in lower and 'closing date:' in lower and 'funding type:' in lower and 'grant' in lower and 'uk registered' in lower)
         if not required:
             raise ValueError('Innovate UK ZEVI source drift or challenge page')
+        closing=re.search(r'Closing date:\s*(\d{1,2}\s+[A-Za-z]+\s+\d{4})\s+(\d{1,2}:\d{2})\s*(am|pm)\s+UK time',text,re.I)
+        if not closing:
+            raise ValueError('Innovate UK ZEVI closing date missing or changed')
         title='Zero Emission Vessels and Infrastructure 2: Alternative Fuels'
         countries=['GB']
         eligibility='UK registered organisations can apply for a share of the published competition funding; project, collaboration and clean maritime eligibility terms must be verified at the official source.'
         terms['funding_purpose']='Develop, deploy and operate innovative clean maritime solutions in a real-world environment.'
         terms['applicant_type']='organization'
         terms['reporting_obligation']='Project delivery, monitoring and competition-specific reporting terms apply; verify the official brief.'
-        cutoff=datetime.strptime('16 September 2026 11:00','%d %B %Y %H:%M').replace(tzinfo=ZoneInfo('Europe/London')).astimezone(timezone.utc)
+        cutoff=datetime.strptime(f'{closing[1]} {closing[2]}{closing[3]}','%d %B %Y %I:%M%p').replace(tzinfo=ZoneInfo('Europe/London')).astimezone(timezone.utc)
         deadline={'kind':'fixed','at':cutoff.isoformat().replace('+00:00','Z')}
-        status='open' if cutoff > datetime.fromisoformat(checked_at.replace('Z','+00:00')) else 'closed'
+        explicitly_closed=bool(re.search(r'Opportunity status:\s*Closed\b',text,re.I))
+        status='closed' if explicitly_closed or cutoff <= datetime.fromisoformat(checked_at.replace('Z','+00:00')) else 'open'
     else:
         parser=Text(); parser.feed(raw.decode('utf-8'))
         text=' '.join(' '.join(parser.parts).split())

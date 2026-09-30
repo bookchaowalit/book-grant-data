@@ -30,3 +30,11 @@ Current state: **7/10** (pass 1: 5 -> 7; pass 2: 7, consumer-facing CLI fix). Of
 - Drift guard: the HTML text extractor now also ignores `<noscript>` and `<svg>` (matching
   the sibling creator/deal/learning/mobility/paid-study/partnership/startup adapters), so
   markers hidden there cannot pass a challenge page; `tests/test_text_extraction.py`.
+
+## Done in this pass (pass 3)
+
+- Score: 7 -> 7.5.
+- ZEVI "<date> <h:mm>am UK time" cutoff is parsed without `strptime(%B/%p)` (host-locale dependent) and a naive `checked_at` now raises ValueError instead of TypeError; tests cover BST/GMT, noon/midnight, the repeated October hour and offset boundaries. Added `tzdata; sys_platform == 'win32'` so `ZoneInfo('Europe/London')` works on Windows.
+- Shared `cli.py` (same edit in all 13 sibling copies): `validate` now rejects NaN, ±Infinity and overflowing literals such as `1e400` (Python's json turns them into non-finite floats that JSON Schema `number` accepted); `timestamp` normalises fractional seconds so Python 3.10 accepts the same RFC3339 values as 3.11+ (it rejected e.g. `.1Z`) and only ASCII digits match; a trailing-dot `example.org.` host can no longer be claimed `live`.
+- `tests/test_shared_cli.py` (byte-identical in all 13 repos) pins this repo's `cli.py` sha256 (three variants: base, +`contract --version`, +benefit availability) so a one-repo edit fails CI, and covers the fixes above across UTC/+07:00/-04:00 offsets. To change `cli.py`: edit every copy of the variant, then update `CLI_SHA256` in all 13 copies of the test.
+- Not done (needs a reviewed live capture, so left blocked): stronger drift markers and any page-phrase extraction; no page phrases were invented.

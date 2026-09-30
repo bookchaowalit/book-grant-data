@@ -9,7 +9,27 @@ from html.parser import HTMLParser
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-from .cli import resource, validate
+from .cli import resource, timestamp, validate
+
+MONTHS = {name: number for number, name in enumerate(
+    ('january', 'february', 'march', 'april', 'may', 'june', 'july', 'august',
+     'september', 'october', 'november', 'december'), 1)}
+
+
+def uk_time_to_utc(day_month_year, clock, meridiem):
+    """Convert a published "16 September 2026 11:00am UK time" cutoff to UTC.
+
+    Month names and am/pm are matched explicitly, so the host locale (which drives
+    ``strptime`` %B/%p) cannot change the result, and UK summer time comes from the
+    Europe/London zone rather than the host clock.
+    """
+    day, month, year = day_month_year.split()
+    hour, minute = (int(part) for part in clock.split(':'))
+    if month.casefold() not in MONTHS or not 1 <= hour <= 12:
+        raise ValueError('unsupported UK closing time')
+    hour = hour % 12 + (12 if meridiem.casefold() == 'pm' else 0)
+    local = datetime(int(year), MONTHS[month.casefold()], int(day), hour, minute, tzinfo=ZoneInfo('Europe/London'))
+    return local.astimezone(timezone.utc)
 
 
 class Text(HTMLParser):
@@ -104,10 +124,10 @@ def normalize(raw, source, checked_at):
         terms['funding_purpose']='Develop, deploy and operate innovative clean maritime solutions in a real-world environment.'
         terms['applicant_type']='organization'
         terms['reporting_obligation']='Project delivery, monitoring and competition-specific reporting terms apply; verify the official brief.'
-        cutoff=datetime.strptime(f'{closing[1]} {closing[2]}{closing[3]}','%d %B %Y %I:%M%p').replace(tzinfo=ZoneInfo('Europe/London')).astimezone(timezone.utc)
+        cutoff=uk_time_to_utc(closing[1],closing[2],closing[3])
         deadline={'kind':'fixed','at':cutoff.isoformat().replace('+00:00','Z')}
         explicitly_closed=bool(re.search(r'Opportunity status:\s*Closed\b',text,re.I))
-        status='closed' if explicitly_closed or cutoff <= datetime.fromisoformat(checked_at.replace('Z','+00:00')) else 'open'
+        status='closed' if explicitly_closed or cutoff <= timestamp(checked_at) else 'open'
     else:
         raise ValueError('unknown grant source')
     record_id=source['id']+(':'+deadline['at'][:10] if deadline['kind']=='fixed' else '')

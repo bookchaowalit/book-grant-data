@@ -1,5 +1,4 @@
 """One explicit official source; all unsupported facts remain unknown."""
-import base64
 import argparse
 import json
 import os
@@ -9,6 +8,7 @@ from datetime import datetime, timezone
 from html.parser import HTMLParser
 from pathlib import Path
 from zoneinfo import ZoneInfo
+
 from .cli import resource, validate
 
 
@@ -69,6 +69,8 @@ def normalize(raw, source, checked_at):
     countries=[]
     if source['access']=='govuk-api':
         body=json.loads(raw)
+        if not isinstance(body,dict):
+            raise ValueError('unexpected GOV.UK document')
         if body.get('base_path') != source['source_url'].removeprefix('https://www.gov.uk') or not isinstance(body.get('details'),dict):
             raise ValueError('unexpected GOV.UK document')
         title=body.get('title')
@@ -76,16 +78,6 @@ def normalize(raw, source, checked_at):
         if title != expected: raise ValueError('source title drift')
         eligibility='UK program; read current eligibility and residence or organization requirements at the official source.'
         if source['domain']=='benefit': terms['jurisdiction']='United Kingdom'
-    elif source['access']=='github-api':
-        body=json.loads(raw)
-        if body.get('encoding')!='base64' or body.get('name')!='about-github-education-for-students.md':
-            raise ValueError('unexpected GitHub content')
-        text=base64.b64decode(''.join(body['content'].split()),validate=True).decode('utf-8')
-        if 'title: About GitHub Education for students' not in text or 'student' not in text.lower():
-            raise ValueError('student benefits source drift')
-        title='GitHub Education student benefits'
-        terms['delivery_kind']='access'
-        eligibility='Student verification and current GitHub Education requirements apply; partner offers have separate terms.'
     elif source['id']=='depa-digital-startup-fund':
         parser=Text(); parser.feed(raw.decode('utf-8'))
         text=' '.join(' '.join(parser.parts).split())
@@ -117,20 +109,7 @@ def normalize(raw, source, checked_at):
         explicitly_closed=bool(re.search(r'Opportunity status:\s*Closed\b',text,re.I))
         status='closed' if explicitly_closed or cutoff <= datetime.fromisoformat(checked_at.replace('Z','+00:00')) else 'open'
     else:
-        parser=Text(); parser.feed(raw.decode('utf-8'))
-        text=' '.join(' '.join(parser.parts).split())
-        if 'Chevening in Thailand' not in text:
-            raise ValueError('Chevening source drift or challenge page')
-        title='Chevening in Thailand'
-        countries=['TH']
-        terms['study_level']='postgraduate'
-        eligibility='Thailand program; nationality alone does not establish eligibility. Verify all Chevening requirements.'
-        match=re.search(r'Open for applications until (\d{1,2} [A-Za-z]+ \d{4}), at (\d{2}:\d{2}) \(UTC\)',text)
-        if match:
-            cutoff=datetime.strptime(match[1]+' '+match[2],'%d %B %Y %H:%M').replace(tzinfo=timezone.utc)
-            deadline={'kind':'fixed','at':cutoff.isoformat().replace('+00:00','Z')}
-            status='open' if cutoff > datetime.fromisoformat(checked_at.replace('Z','+00:00')) else 'closed'
-        elif re.search(r'Applications (?:are |have )?closed',text,re.I): status='closed'
+        raise ValueError('unknown grant source')
     record_id=source['id']+(':'+deadline['at'][:10] if deadline['kind']=='fixed' else '')
     value_kind='access' if source['domain']=='freebie' else ('cash' if source['id'] in {'depa-digital-startup-fund','iuk-zevi2-alternative-fuels'} else 'unknown')
     value_currency='GBP' if source['id']=='iuk-zevi2-alternative-fuels' else None
@@ -165,7 +144,7 @@ def main(argv=None):
         print('Shared discovery runtime is unavailable.',file=sys.stderr)
         return 2
     sys.path.insert(0,str(runtime))
-    from discovery.capture_runtime import run, VERSION
+    from discovery.capture_runtime import VERSION, run
     if VERSION != 1: raise RuntimeError('unsupported shared capture runtime')
     return run(source_config(selected.source_id),normalize,validate,remaining)
 

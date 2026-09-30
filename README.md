@@ -30,7 +30,13 @@ book-grant-data demo --open-only
 book-grant-data demo --query "research"
 book-grant-data validate src/book_grant_data/demo.json
 python -m unittest discover -s tests -v
+python -m pip install -e ".[dev]"  # pytest + pinned ruff
+ruff check . && python -m pytest -q
 ```
+
+CI (`.github/workflows/ci.yml`) runs `ruff check`, the offline test suite and a
+CLI smoke test on Python 3.10 and 3.13. `tests/test_registry.py` keeps
+`sources.json`, the packaged `source*.json` configs and the contract in sync.
 
 With dependencies already available, use `PYTHONPATH=src python3 -m book_grant_data`.
 `demo` uses the fixed synthetic clock 2026-09-07T00:00:00Z unless `--as-of` is
@@ -78,14 +84,18 @@ real eligibility and production operations are **unverified**, not passing gates
 ## Official source pilots
 
 Sources: [GOV.UK / Innovate UK](https://www.gov.uk/apply-funding-innovation),
-[depa Digital Startup Fund](https://www.depa.or.th/th/startup), and
-[Innovate UK ZEVI 2 Alternative Fuels](https://www.ukri.org/opportunity/zero-emission-vessels-and-infrastructure-two-alternative-fuels/).
+[depa Digital Startup Fund](https://www.depa.or.th/th/startup),
+[Innovate UK ZEVI 2 Alternative Fuels](https://www.ukri.org/opportunity/zero-emission-vessels-and-infrastructure-two-alternative-fuels/),
+[National Lottery Community Fund programmes](https://www.tnlcommunityfund.org.uk/funding/funding-programmes),
+[Creative Europe culture calls](https://culture.ec.europa.eu/funding/calls),
+[Grants.gov research search](https://grants.gov/search-grants.html), and
+[SBA grants](https://www.sba.gov/loans/additional-funding-opportunities/grants/).
 The exact source configurations live in `src/book_grant_data/source*.json`;
 the enabled IDs and capture status are recorded in `sources.json`.
-GitHub documentation attribution: GitHub, CC BY 4.0 (docs repository license).
 GOV.UK content attribution: Crown copyright, Open Government Licence v3.0.
-Chevening attribution: Chevening/FCDO. Only private source archival and bounded
-program metadata extraction; no public mirror of the source body.
+Other providers' content remains subject to the terms recorded in each source's
+`permission_evidence`. Only private source archival and bounded program metadata
+extraction; no public mirror of the source body.
 
 Run from this repo with the existing data-lake Python environment:
 
@@ -114,8 +124,9 @@ There are at most two source GET attempts (15-second timeout each), a 2 MB
 response cap and a six-hour cooldown under a local file lock. HTML sources
 recheck robots.txt; API sources use their documented public API and license.
 429/auth failures are not retried. Redirects need explicit policy review.
-Sensitive session-token markers are refused before archive; the GitHub live lane
-therefore reads licensed Markdown through the public Contents API, not pack HTML.
+Sensitive session-token markers are refused before archive. The GOV.UK source is
+read through the public GOV.UK Content API; adapters for unregistered source IDs
+fail closed instead of falling back to a generic parser.
 
 The grant pilot is a **funding directory**, not a claim of an open award. The
 depa page remains a Thailand program directory; deadlines, co-funding, amounts

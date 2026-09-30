@@ -1,6 +1,7 @@
 import base64
 import json
 import unittest
+
 from book_grant_data.capture import normalize, source_config
 from book_grant_data.cli import resource, validate
 
@@ -48,7 +49,7 @@ class SourceTests(unittest.TestCase):
 
     def test_depa_official_directory_fixture(self):
         source=source_config('depa-digital-startup-fund')
-        raw='<h1>depa Digital Startup Fund</h1><h2>Idea Stage</h2><p>Digital Startup Fund</p>'.encode()
+        raw=b'<h1>depa Digital Startup Fund</h1><h2>Idea Stage</h2><p>Digital Startup Fund</p>'
         data=normalize(raw,source,'2026-09-07T00:00:00Z')
         for item in data['items']:
             item['provenance'].update(raw_object_key='landing/test',bronze_manifest_key='control/manifests/test')
@@ -61,9 +62,9 @@ class SourceTests(unittest.TestCase):
 
     def test_iuk_competition_fixture_has_deadline(self):
         source=source_config('iuk-zevi2-alternative-fuels')
-        raw=('Zero emission vessels and infrastructure two: alternative fuels '
-             'UK registered organisations can apply. Closing date: 16 September 2026 11:00am UK time '
-             'Funding type: Grant').encode()
+        raw=(b'Zero emission vessels and infrastructure two: alternative fuels '
+             b'UK registered organisations can apply. Closing date: 16 September 2026 11:00am UK time '
+             b'Funding type: Grant')
         data=normalize(raw,source,'2026-09-07T00:00:00Z')
         for item in data['items']:
             item['provenance'].update(raw_object_key='landing/test',bronze_manifest_key='control/manifests/test')
@@ -77,10 +78,10 @@ class SourceTests(unittest.TestCase):
 
     def test_iuk_extended_closed_opportunity_uses_current_deadline(self):
         source=source_config('iuk-zevi2-alternative-fuels')
-        raw=('Zero emission vessels and infrastructure two: alternative fuels '
-             'Opportunity status: Closed. Closing date: 17 September 2026 11:00am UK time. '
-             'The closing date has been extended to 17 September 11am UK time due to technical issues. '
-             'Funding type: Grant. UK registered organisations can apply.').encode()
+        raw=(b'Zero emission vessels and infrastructure two: alternative fuels '
+             b'Opportunity status: Closed. Closing date: 17 September 2026 11:00am UK time. '
+             b'The closing date has been extended to 17 September 11am UK time due to technical issues. '
+             b'Funding type: Grant. UK registered organisations can apply.')
         data=normalize(raw,source,'2026-09-23T14:47:14Z')
         for item in data['items']:
             item['provenance'].update(raw_object_key='landing/test',bronze_manifest_key='control/manifests/test')

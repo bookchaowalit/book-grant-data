@@ -10,3 +10,5 @@ logs/
 .env.*
 !.env.example
 credentials/
+.ruff_cache/
+.pytest_cache/

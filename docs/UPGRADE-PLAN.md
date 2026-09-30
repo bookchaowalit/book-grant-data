@@ -27,3 +27,6 @@ Current state: **7/10** (pass 1: 5 -> 7; pass 2: 7, consumer-facing CLI fix). Of
   Unknown versions exit 2. Registry test, CI smoke and README updated (same change as the
   sibling scholarship/freebie/grant/benefit CLIs).
 - Weak drift markers left unchanged: stronger phrases need a reviewed live capture.
+- Drift guard: the HTML text extractor now also ignores `<noscript>` and `<svg>` (matching
+  the sibling creator/deal/learning/mobility/paid-study/partnership/startup adapters), so
+  markers hidden there cannot pass a challenge page; `tests/test_text_extraction.py`.

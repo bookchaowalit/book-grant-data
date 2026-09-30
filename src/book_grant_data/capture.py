@@ -16,9 +16,9 @@ class Text(HTMLParser):
     def __init__(self):
         super().__init__(); self.parts=[]; self.hidden=0
     def handle_starttag(self, tag, attrs):
-        if tag in {'script','style'}: self.hidden += 1
+        if tag in {'script','style','noscript','svg'}: self.hidden += 1
     def handle_endtag(self, tag):
-        if tag in {'script','style'}: self.hidden = max(0,self.hidden-1)
+        if tag in {'script','style','noscript','svg'}: self.hidden = max(0,self.hidden-1)
     def handle_data(self, value):
         if not self.hidden: self.parts.append(value)
 

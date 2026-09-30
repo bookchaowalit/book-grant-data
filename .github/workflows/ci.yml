@@ -38,5 +38,6 @@ jobs:
       - name: CLI smoke (offline, synthetic fixture only)
         run: |
           book-grant-data contract > /dev/null
+          book-grant-data contract --version v2 > /dev/null
           book-grant-data validate src/book_grant_data/demo.json
           book-grant-data demo --open-only > /dev/null

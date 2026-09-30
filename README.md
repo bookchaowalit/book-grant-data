@@ -25,7 +25,8 @@ than copying the same award into several products.
 python3 -m venv .venv
 . .venv/bin/activate
 python -m pip install -e .
-book-grant-data contract
+book-grant-data contract              # v1 (demo)
+book-grant-data contract --version v2 # v2 (captured records)
 book-grant-data demo --open-only
 book-grant-data demo --query "research"
 book-grant-data validate src/book_grant_data/demo.json

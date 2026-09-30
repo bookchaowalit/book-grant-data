@@ -98,7 +98,13 @@ def filter_items(payload, as_of, open_only=False, query="", max_age_hours=72):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
-    sub.add_parser("contract")
+    contract = sub.add_parser("contract")
+    contract.add_argument(
+        "--version",
+        choices=("v1", "v2"),
+        default="v1",
+        help="Contract to print: v1 (default, demo/fixtures) or v2 (captured records)",
+    )
     check = sub.add_parser("validate")
     check.add_argument("file", help="Explicit normalized export; input is never persisted")
     demo = sub.add_parser("demo")
@@ -109,7 +115,7 @@ def main(argv=None):
     args = parser.parse_args(argv)
     try:
         if args.command == "contract":
-            output = resource("schema.json")
+            output = resource("schema-v2.json" if args.version == "v2" else "schema.json")
         elif args.command == "validate":
             with open(args.file, encoding="utf-8") as source:
                 payload = validate(json.load(source))

@@ -151,6 +151,20 @@ class CliTests(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertEqual(json.loads(out)["properties"]["schema_version"], resource("schema.json")["properties"]["schema_version"])
 
+    def test_contract_version_selects_v1_or_v2_schema(self):
+        for version, name in (("v1", "schema.json"), ("v2", "schema-v2.json")):
+            with self.subTest(version=version):
+                code, out, _ = self.run_cli("contract", "--version", version)
+                self.assertEqual(code, 0)
+                self.assertEqual(json.loads(out), resource(name))
+        # v2 is the contract captured records are emitted under.
+        self.assertEqual(
+            resource("schema-v2.json")["properties"]["schema_version"]["const"],
+            source_config()["schema_version"],
+        )
+        with self.assertRaises(SystemExit), redirect_stderr(io.StringIO()):
+            main(["contract", "--version", "v3"])
+
     def test_validate_command_accepts_packaged_demo(self):
         code, out, _ = self.run_cli("validate", str(ROOT / "src" / "book_grant_data" / "demo.json"))
         self.assertEqual(code, 0)

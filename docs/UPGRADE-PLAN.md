@@ -1,10 +1,10 @@
 # Upgrade plan — book-grant-data
 
-Current state: **7/10** (pass 1: 5 -> 7; pass 2: 7, consumer-facing CLI fix). Offline contract, adapters and CLI are tested and linted in CI; live capture, source permission and consumers remain unverified by design.
+Current state: **7.5/10** (pass 1: 5 -> 7; pass 2: 7; pass 3: 7 -> 7.5; pass 4: unchanged). Offline contract, adapters and CLI have offline tests and lint wired into CI (runs not yet confirmed green, see P0); live capture, source permission and consumers remain unverified by design.
 
 ## Backlog
 
-- P0: Push this branch and confirm the new GitHub Actions `CI` workflow is green on both Python versions.
+- P0: Confirm GitHub Actions `CI` is green on `claude/untitled-session-bhlj06`. The branch is pushed, but every run so far ended within ~5 s with no job logs (runner never started, not a test failure); check the account's Actions/billing settings, then re-run.
 - P1: Strengthen drift markers for `sba-small-business-grants` — their `required_markers` are only fragments of the title, so a challenge or error page that repeats the title would pass. Pick body phrases from a captured page (needs a reviewed live capture; not done offline).
 - P1: Replace the copy of `cli.py`/`capture.py` scaffolding shared by the sibling `book-*-data` repos with the shared runtime package once it is independently installable (README gate 3).
 - P1: ZEVI 2 deadline (2026-09-16) has passed; add the next reviewed competition as a new source record ID rather than editing history.

@@ -1,6 +1,7 @@
 import base64
 import json
 import unittest
+
 from book_grant_data.capture import normalize, source_config
 from book_grant_data.cli import resource, validate
 
@@ -48,7 +49,7 @@ class SourceTests(unittest.TestCase):
 
     def test_depa_official_directory_fixture(self):
         source=source_config('depa-digital-startup-fund')
-        raw='<h1>depa Digital Startup Fund</h1><h2>Idea Stage</h2><p>Digital Startup Fund</p>'.encode()
+        raw=b'<h1>depa Digital Startup Fund</h1><h2>Idea Stage</h2><p>Digital Startup Fund</p>'
         data=normalize(raw,source,'2026-09-07T00:00:00Z')
         for item in data['items']:
             item['provenance'].update(raw_object_key='landing/test',bronze_manifest_key='control/manifests/test')
@@ -61,9 +62,9 @@ class SourceTests(unittest.TestCase):
 
     def test_iuk_competition_fixture_has_deadline(self):
         source=source_config('iuk-zevi2-alternative-fuels')
-        raw=('Zero emission vessels and infrastructure two: alternative fuels '
-             'UK registered organisations can apply. Closing date: 16 September 2026 11:00am UK time '
-             'Funding type: Grant').encode()
+        raw=(b'Zero emission vessels and infrastructure two: alternative fuels '
+             b'UK registered organisations can apply. Closing date: 16 September 2026 11:00am UK time '
+             b'Funding type: Grant')
         data=normalize(raw,source,'2026-09-07T00:00:00Z')
         for item in data['items']:
             item['provenance'].update(raw_object_key='landing/test',bronze_manifest_key='control/manifests/test')
@@ -77,10 +78,10 @@ class SourceTests(unittest.TestCase):
 
     def test_iuk_extended_closed_opportunity_uses_current_deadline(self):
         source=source_config('iuk-zevi2-alternative-fuels')
-        raw=('Zero emission vessels and infrastructure two: alternative fuels '
-             'Opportunity status: Closed. Closing date: 17 September 2026 11:00am UK time. '
-             'The closing date has been extended to 17 September 11am UK time due to technical issues. '
-             'Funding type: Grant. UK registered organisations can apply.').encode()
+        raw=(b'Zero emission vessels and infrastructure two: alternative fuels '
+             b'Opportunity status: Closed. Closing date: 17 September 2026 11:00am UK time. '
+             b'The closing date has been extended to 17 September 11am UK time due to technical issues. '
+             b'Funding type: Grant. UK registered organisations can apply.')
         data=normalize(raw,source,'2026-09-23T14:47:14Z')
         for item in data['items']:
             item['provenance'].update(raw_object_key='landing/test',bronze_manifest_key='control/manifests/test')
@@ -88,5 +89,42 @@ class SourceTests(unittest.TestCase):
         item=data['items'][0]
         self.assertEqual(item['deadline'],{'kind':'fixed','at':'2026-09-17T10:00:00Z'})
         self.assertEqual(item['status'],'closed')
+
+    def zevi(self, closing):
+        return ('Zero emission vessels and infrastructure two: alternative fuels '
+                'UK registered organisations can apply. Closing date: ' + closing + ' UK time '
+                'Funding type: Grant').encode()
+
+    def test_iuk_cutoff_follows_uk_summer_and_winter_time(self):
+        source=source_config('iuk-zevi2-alternative-fuels')
+        cases={
+            '16 September 2026 11:00am':'2026-09-16T10:00:00Z',  # BST, UTC+1
+            '5 November 2026 11:00am':'2026-11-05T11:00:00Z',    # GMT after 25 Oct
+            '16 SEPTEMBER 2026 12:00pm':'2026-09-16T11:00:00Z',  # noon, case-insensitive month
+            '16 September 2026 12:30am':'2026-09-15T23:30:00Z',  # just after midnight BST
+            '25 October 2026 1:30am':'2026-10-25T00:30:00Z',     # repeated hour: earlier (BST) instant
+        }
+        for closing,expected in cases.items():
+            with self.subTest(closing=closing):
+                item=normalize(self.zevi(closing),source,'2026-09-07T00:00:00Z')['items'][0]
+                self.assertEqual(item['deadline'],{'kind':'fixed','at':expected})
+
+    def test_iuk_status_compares_instants_across_offsets(self):
+        source=source_config('iuk-zevi2-alternative-fuels')
+        raw=self.zevi('16 September 2026 11:00am')
+        cases={'2026-09-16T09:59:59Z':'open','2026-09-16T10:00:00Z':'closed',
+               '2026-09-16T16:59:59+07:00':'open','2026-09-16T17:00:00+07:00':'closed',
+               '2026-09-16T05:59:59-04:00':'open'}
+        for checked_at,status in cases.items():
+            with self.subTest(checked_at=checked_at):
+                self.assertEqual(normalize(raw,source,checked_at)['items'][0]['status'],status)
+
+    def test_iuk_rejects_naive_clock_and_impossible_times(self):
+        source=source_config('iuk-zevi2-alternative-fuels')
+        with self.assertRaises(ValueError):
+            normalize(self.zevi('16 September 2026 11:00am'),source,'2026-09-16T10:00:00')
+        for closing in ('16 Septembre 2026 11:00am','16 September 2026 13:00pm','31 September 2026 11:00am'):
+            with self.subTest(closing=closing),self.assertRaises(ValueError):
+                normalize(self.zevi(closing),source,'2026-09-07T00:00:00Z')
 
 if __name__=='__main__': unittest.main()

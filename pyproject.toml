@@ -7,7 +7,7 @@ name = "book-grant-data"
 version = "0.1.0"
 description = "Find non-equity project funding and its reporting obligations."
 requires-python = ">=3.10"
-dependencies = ["jsonschema==4.19.2"]
+dependencies = ["jsonschema==4.19.2", "tzdata; sys_platform == 'win32'"]
 
 [project.scripts]
 book-grant-data = "book_grant_data.cli:main"
@@ -17,3 +17,19 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 book_grant_data = ["*.json"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff==0.16.9"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 120
+
+[tool.ruff.lint]
+# Correctness-focused set; the compact adapter style (E7 one-line statements)
+# is intentionally left alone.
+select = ["E9", "F", "I", "UP", "B"]

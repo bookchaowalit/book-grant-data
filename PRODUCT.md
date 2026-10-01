@@ -24,12 +24,12 @@ description: Outcome, consumers, ownership, contract, quality, privacy, and oper
 
 - Decision or user outcome: Find non-equity project funding and its reporting obligations.
 - Consumers and use cases: Discovery applications; integration planned.
-- Source systems and lake layers: Synthetic fixtures only today; permitted source → landing → Bronze planned.
+- Source systems and lake layers: Seven reviewed official sources → landing → Bronze through the shared local runtime (manual acquisition); synthetic fixtures remain for offline contract tests.
 - In scope/out of scope: Project funding calls; individual tuition goes to scholarship and cohort admission to startup-program.
 - Freshness, availability, and volume expectation: Target source review every 24h; open filter rejects checks older than 72h; no live SLA.
-- Data classification, residency, retention, and access: Public synthetic fixtures; no user profile; raw retention must be set per future source before ingestion.
+- Data classification, residency, retention, and access: Public program metadata and synthetic fixtures; no user profile; raw source bytes remain in the private local operational archive.
 - Quality thresholds and incident route: All contract tests pass; live quality/replay gates pending; owner handles source failures.
-- Cost/capacity guardrail: Offline only, zero provider calls; max 10,000 records per envelope.
+- Cost/capacity guardrail: Manual local capture only; six-hour source cooldown and max 10,000 records per envelope.
 - Versioning, deprecation, and migration policy: Draft v1; breaking changes version separately; no legacy migration or live consumer yet.
 
 ## Acceptance and ownership

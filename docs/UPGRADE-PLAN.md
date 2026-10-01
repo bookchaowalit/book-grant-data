@@ -1,15 +1,18 @@
 # Upgrade plan — book-grant-data
 
-Current state: **7.5/10** (pass 1: 5 -> 7; pass 2: 7; pass 3: 7 -> 7.5; pass 4: unchanged). Offline contract, adapters and CLI have offline tests and lint wired into CI (runs not yet confirmed green, see P0); live capture, source permission and consumers remain unverified by design.
+Current state: **7.5/10** (pass 1: 5 -> 7; pass 2: 7; pass 3: 7 -> 7.5; pass 4: unchanged). Offline contract, adapters and CLI are tested and linted in GitHub Actions CI (green on `claude/untitled-session-bhlj06`, 2026-10-01); live capture, source permission and consumers remain unverified by design.
 
 ## Backlog
 
-- P0: Confirm GitHub Actions `CI` is green on `claude/untitled-session-bhlj06`. The branch is pushed, but every run so far ended within ~5 s with no job logs (runner never started, not a test failure); check the account's Actions/billing settings, then re-run.
 - P1: Strengthen drift markers for `sba-small-business-grants` — their `required_markers` are only fragments of the title, so a challenge or error page that repeats the title would pass. Pick body phrases from a captured page (needs a reviewed live capture; not done offline).
 - P1: Replace the copy of `cli.py`/`capture.py` scaffolding shared by the sibling `book-*-data` repos with the shared runtime package once it is independently installable (README gate 3).
 - P1: ZEVI 2 deadline (2026-09-16) has passed; add the next reviewed competition as a new source record ID rather than editing history.
 - P2: `depa` directory stays status `unknown`; add a round-specific parser only when an exact window is published.
 - P2: Add a live-capture smoke job only behind an explicit manual trigger and reviewed source permission (never on push).
+
+## Docs sync (2026-10-01)
+
+- Closed P0 "confirm CI green": the `CI` run on `claude/untitled-session-bhlj06` passed on both Python versions (earlier ~5 s runs without job logs were runner start failures, not test failures).
 
 ## Done in this pass (pass 1)
 

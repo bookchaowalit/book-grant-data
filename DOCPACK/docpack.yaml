@@ -1,0 +1,8 @@
+system_id: bookchaowalit/book-apps/tools/book-grant-data
+prefix: BGD
+brand: "GRANT DATA"
+subtitle: "ค้นหาทุนให้เปล่าสำหรับโปรเจกต์พร้อมภาระรายงาน จากแหล่งทางการ"
+footer: "Book Grant Data — ฉบับร่างเพื่อพิจารณา"
+color: "#2f4b6e"
+audience: internal
+tier: L1

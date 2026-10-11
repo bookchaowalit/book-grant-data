@@ -45,11 +45,11 @@ book-grant-data demo --open-only
 
 ## 4. Manual capture (acquire) และ replay
 
-ตั้ง `SOLO_EMPIRE_ROOT` ให้ชี้ checkout ของ Solo Empire บนเครื่อง (README ตัวอย่างใช้ path
-`/home/bookchaowalit/book/solo-empire` ซึ่งต่างจาก checkout ปัจจุบัน **[ต้องยืนยัน]** path ที่ถูกต้อง)
+ตั้ง `SOLO_DATA_LAKE_ROOT` ให้ชี้ checkout ของ solo-data-lake บนเครื่อง (README ตัวอย่างใช้ placeholder
+`/path/to/solo-data-lake`)
 
 ```bash
-PY="$SOLO_EMPIRE_ROOT/infra/.venv-datalake/bin/python"
+PY="$SOLO_DATA_LAKE_ROOT/.venv/bin/python"
 # ทุกแหล่งที่เปิด
 PYTHONPATH=src "$PY" -m book_grant_data.capture acquire --lake "$PWD/data/lake" --state-dir "$PWD/data/control"
 # แหล่งเดียว
@@ -73,7 +73,7 @@ PYTHONPATH=src "$PY" -m book_grant_data.capture status --lake "$PWD/data/lake" -
 
 | ชื่อตัวแปร | ใช้ทำอะไร |
 |---|---|
-| `SOLO_EMPIRE_ROOT` | path ของ parent ที่มี `infra/scripts/discovery/capture_runtime.py` |
+| `SOLO_DATA_LAKE_ROOT` | path ของ solo-data-lake ที่มี `infra/scripts/discovery/capture_runtime.py` |
 | `PYTHONPATH` | ชี้ `src` เมื่อรันโดยไม่ติดตั้ง package |
 
 ไม่มี secret, token หรือ credential — ทุกแหล่งเป็น public read
@@ -93,7 +93,7 @@ task discovery -- coverage --domain grant      # จาก parent
 
 | อาการ | สาเหตุที่เป็นไปได้ | การแก้ |
 |---|---|---|
-| `Set SOLO_EMPIRE_ROOT ...` (exit 2) | ไม่ได้ตั้งตัวแปร | ตั้ง `SOLO_EMPIRE_ROOT` |
+| `Set SOLO_DATA_LAKE_ROOT ...` (exit 2) | ไม่ได้ตั้งตัวแปร | ตั้ง `SOLO_DATA_LAKE_ROOT` |
 | `Shared discovery runtime is unavailable.` | path ผิด/parent ไม่มี runtime | ตรวจ checkout ของ parent |
 | `unsupported shared capture runtime` | runtime VERSION ≠ 1 | ใช้ runtime เวอร์ชันที่ตรง หรืออัปเดต adapter |
 | `unknown source id` / `unknown grant source` | ID ไม่อยู่ใน policy | ตรวจ `sources.json` และ `source-*.json` |

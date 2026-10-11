@@ -81,7 +81,7 @@ sequenceDiagram
 - Python ≥ 3.10 (CI ทดสอบ 3.10 และ 3.13), setuptools
 - `jsonschema==4.19.2`, `tzdata` (เฉพาะ Windows) สำหรับ `ZoneInfo('Europe/London')`
 - Dev: `pytest>=8`, `ruff==0.16.9`
-- Capture lane ใช้ Python environment ของ parent (`infra/.venv-datalake`, มี pyarrow) **[ต้องยืนยัน]** รายการ package ที่แน่นอน
+- Capture lane ใช้ Python environment ของ solo-data-lake (`.venv`, มี pyarrow) **[ต้องยืนยัน]** รายการ package ที่แน่นอน
 
 ## 5. Data stores
 
@@ -99,7 +99,7 @@ sequenceDiagram
 | ระบบ | ทิศทาง | Contract |
 |---|---|---|
 | แหล่งทุนทั้ง 7 | ขาเข้า (HTTPS GET อ่านอย่างเดียว) | GOV.UK Content API (OGL v3.0) / HTML ที่ผ่าน robots.txt |
-| Shared capture runtime | in-process import จาก `SOLO_EMPIRE_ROOT` | `discovery.capture_runtime.VERSION == 1` |
+| Shared capture runtime | in-process import จาก `SOLO_DATA_LAKE_ROOT` | `discovery.capture_runtime.VERSION == 1` |
 | `discovery.portfolio.v1` | ขาออก (อ่าน CLI) | `grant.v2` |
 | Parent registries (`projects.yaml`) | เอกสาร | ยังระบุ `grant.v1`; ต้องบันทึก migration (`grt-t6`) |
 

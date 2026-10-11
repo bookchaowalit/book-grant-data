@@ -71,7 +71,7 @@ CRM, tasks, application tracker, or notification system.
 1. Keep the seven source adapters fresh and add a specific intake-window parser when a reviewed call publishes one.
 2. Expand domain field extraction and live quality monitoring.
 3. Package the local shared capture runtime for independent deployment.
-   Current source capture and replay use the explicit Solo Empire runtime.
+   Current source capture and replay use the explicit solo-data-lake runtime.
 4. Add live source tests, retention/access controls and runtime monitoring.
 5. Connect a read-only consumer. Personal eligibility, ranking, deadlines and
    application workflow belong to consumers with separate private storage.
@@ -101,13 +101,13 @@ extraction; no public mirror of the source body.
 Run from this repo with the existing data-lake Python environment:
 
 ```bash
-export SOLO_EMPIRE_ROOT=/home/bookchaowalit/book/solo-empire
-PYTHONPATH=src "$SOLO_EMPIRE_ROOT/infra/.venv-datalake/bin/python" -m book_grant_data.capture acquire --lake "$PWD/data/lake" --state-dir "$PWD/data/control"
-PYTHONPATH=src "$SOLO_EMPIRE_ROOT/infra/.venv-datalake/bin/python" -m book_grant_data.capture records --lake "$PWD/data/lake" --state-dir "$PWD/data/control"
+export SOLO_DATA_LAKE_ROOT=/path/to/solo-data-lake
+PYTHONPATH=src "$SOLO_DATA_LAKE_ROOT/.venv/bin/python" -m book_grant_data.capture acquire --lake "$PWD/data/lake" --state-dir "$PWD/data/control"
+PYTHONPATH=src "$SOLO_DATA_LAKE_ROOT/.venv/bin/python" -m book_grant_data.capture records --lake "$PWD/data/lake" --state-dir "$PWD/data/control"
 # Select the Thailand NIA directory explicitly when needed:
-PYTHONPATH=src "$SOLO_EMPIRE_ROOT/infra/.venv-datalake/bin/python" -m book_grant_data.capture acquire --source-id depa-digital-startup-fund --lake "$PWD/data/lake" --state-dir "$PWD/data/control"
+PYTHONPATH=src "$SOLO_DATA_LAKE_ROOT/.venv/bin/python" -m book_grant_data.capture acquire --source-id depa-digital-startup-fund --lake "$PWD/data/lake" --state-dir "$PWD/data/control"
 # Select the specific UKRI/Innovate UK competition explicitly when needed:
-PYTHONPATH=src "$SOLO_EMPIRE_ROOT/infra/.venv-datalake/bin/python" -m book_grant_data.capture acquire --source-id iuk-zevi2-alternative-fuels --lake "$PWD/data/lake" --state-dir "$PWD/data/control"
+PYTHONPATH=src "$SOLO_DATA_LAKE_ROOT/.venv/bin/python" -m book_grant_data.capture acquire --source-id iuk-zevi2-alternative-fuels --lake "$PWD/data/lake" --state-dir "$PWD/data/control"
 ```
 
 This lane depends on the explicit local shared `discovery.capture_runtime` v1

@@ -71,7 +71,7 @@ CRM, tasks, application tracker, or notification system.
 1. Keep the seven source adapters fresh and add a specific intake-window parser when a reviewed call publishes one.
 2. Expand domain field extraction and live quality monitoring.
 3. Package the local shared capture runtime for independent deployment.
-   Current source capture and replay use the explicit solo-data-lake runtime.
+   Current source capture and replay use the explicit data-lake runtime.
 4. Add live source tests, retention/access controls and runtime monitoring.
 5. Connect a read-only consumer. Personal eligibility, ranking, deadlines and
    application workflow belong to consumers with separate private storage.

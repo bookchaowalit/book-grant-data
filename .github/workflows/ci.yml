@@ -1,6 +1,9 @@
+# CI + security baseline (DevSecOps Phase 1). Public repository: GitHub-hosted runners.
 name: CI
 
 on:
+  # Gate every branch, not only main (kept from the previous workflow: feature branches
+  # without a PR were otherwise untested).
   push:
   pull_request:
   workflow_dispatch:
@@ -13,31 +16,22 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  checks:
-    name: lint and tests (Python ${{ matrix.python-version }})
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
+  python:
     strategy:
       fail-fast: false
       matrix:
         # Lowest supported (requires-python) and a current release.
         python-version: ["3.10", "3.13"]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-          cache: pip
-          cache-dependency-path: pyproject.toml
-      - name: Install package with dev tools
-        run: python -m pip install -e ".[dev]"
-      - name: Lint
-        run: ruff check .
-      - name: Tests (offline)
-        run: python -m pytest -q
-      - name: CLI smoke (offline, synthetic fixture only)
-        run: |
-          book-grant-data contract > /dev/null
-          book-grant-data contract --version v2 > /dev/null
-          book-grant-data validate src/book_grant_data/demo.json
-          book-grant-data demo --open-only > /dev/null
+    uses: bookchaowalit/platform-ci-workflows/.github/workflows/ci-python.yml@c37ef9d113eefb3ed45429717cb7ca201192c3fc # v1.0.1
+    with:
+      python-version: ${{ matrix.python-version }}
+      # Offline pytest suite, then the CLI smoke the previous workflow ran (synthetic fixture only).
+      test-command: |
+        python -m pytest -q
+        book-grant-data contract > /dev/null
+        book-grant-data contract --version v2 > /dev/null
+        book-grant-data validate src/book_grant_data/demo.json
+        book-grant-data demo --open-only > /dev/null
+
+  security:
+    uses: bookchaowalit/platform-ci-workflows/.github/workflows/security.yml@c37ef9d113eefb3ed45429717cb7ca201192c3fc # v1.0.1

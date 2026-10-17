@@ -1,4 +1,5 @@
 """Drift guard: text hidden from readers must not satisfy source markers."""
+
 import unittest
 
 from book_grant_data.capture import Text

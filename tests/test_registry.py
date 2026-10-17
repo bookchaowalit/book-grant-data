@@ -1,4 +1,5 @@
 """Offline guardrails for the source registry, packaged source configs and CLI."""
+
 import io
 import json
 import tempfile
@@ -46,12 +47,14 @@ def marker_text(source):
 def synthetic_raw(source, text, title=None):
     title = source["title"] if title is None else title
     if source.get("access") == "govuk-api":
-        return json.dumps({
-            "base_path": source["source_url"].removeprefix("https://www.gov.uk"),
-            "title": title,
-            "description": text,
-            "details": {"body": text},
-        }).encode("utf-8")
+        return json.dumps(
+            {
+                "base_path": source["source_url"].removeprefix("https://www.gov.uk"),
+                "title": title,
+                "description": text,
+                "details": {"body": text},
+            }
+        ).encode("utf-8")
     return ("<main><h1>" + title + "</h1><p>" + text + "</p></main>").encode("utf-8")
 
 
@@ -134,7 +137,7 @@ class AdapterTests(unittest.TestCase):
             source = source_config(source_id)
             if source["access"] == "html":
                 continue
-            for raw in (b"[]", b"null", b"\"text\"", b"not json"):
+            for raw in (b"[]", b"null", b'"text"', b"not json"):
                 with self.subTest(source_id=source_id, raw=raw), self.assertRaises(ValueError):
                     normalize(raw, source, CHECKED_AT)
 
@@ -149,7 +152,9 @@ class CliTests(unittest.TestCase):
     def test_contract_command_prints_v1_schema(self):
         code, out, _ = self.run_cli("contract")
         self.assertEqual(code, 0)
-        self.assertEqual(json.loads(out)["properties"]["schema_version"], resource("schema.json")["properties"]["schema_version"])
+        self.assertEqual(
+            json.loads(out)["properties"]["schema_version"], resource("schema.json")["properties"]["schema_version"]
+        )
 
     def test_contract_version_selects_v1_or_v2_schema(self):
         for version, name in (("v1", "schema.json"), ("v2", "schema-v2.json")):
